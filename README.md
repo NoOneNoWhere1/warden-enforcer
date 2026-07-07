@@ -39,6 +39,10 @@ Out of scope for v0: egress is scoped by IP, not content — application-layer e
 
 ## See it run
 
+![Warden enforcement demo](docs/demo.gif)
+
+The full end-to-end run: a prompt-injected recon agent is blocked at the kernel, each violation is signed and logged to Rekor, and the clearing service slashes the agent's reputation and kills the session — the last frame is the honest tally of what's enforced today versus planned. This is the real demo, not a mockup; regenerate it with `vhs demo/gif/demo.tape`.
+
 **Linux (Debian/Ubuntu)** (requires root, nftables, Go 1.26+):
 
 ```bash

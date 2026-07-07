@@ -1,0 +1,6 @@
+.git
+context
+enforcer/bin
+**/__pycache__
+*.pyc
+docs/demo.gif
