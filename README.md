@@ -1,8 +1,8 @@
 # Warden
 
-<!-- [![CI](https://github.com/NoOneNoWhere1/warden-enforcer/actions/workflows/ci.yml/badge.svg)](https://github.com/NoOneNoWhere1/warden-enforcer/actions/workflows/ci.yml) — uncomment on publish -->
+[![CI](https://github.com/NoOneNoWhere1/warden-enforcer/actions/workflows/ci.yml/badge.svg)](https://github.com/NoOneNoWhere1/warden-enforcer/actions/workflows/ci.yml)
 
-Prompt-level guardrails ask agents to behave; Warden enforces at the Linux kernel. Each agent session runs behind per-session nftables rules inside a network namespace, so packets outside the session's credential are dropped at the kernel regardless of what the agent does or is told to do. Every violation becomes an Ed25519-signed, Rekor-logged breach event that a clearing service turns into reputation and bond-ledger slashing.
+Prompt-level guardrails ask agents to behave; Warden enforces at the Linux kernel. Each agent session runs behind per-session nftables rules inside a network namespace, so packets outside the session's credential are dropped at the kernel regardless of what the agent does or is told to do. Every violation becomes an Ed25519-signed breach event — Rekor-logged and turned into reputation and bond-ledger slashing by the clearing service when those layers are enabled.
 
 ---
 
@@ -10,7 +10,7 @@ Prompt-level guardrails ask agents to behave; Warden enforces at the Linux kerne
 
 ![Enforcement-first accountability architecture](docs/enforcement_first_accountability_architecture.svg)
 
-The first diagram shows the full accountability stack — the target architecture; see [What is enforced today](#what-is-enforced-today) for which parts exist. An agent receives a ledger-anchored identity (slow path: DID registration) and a short-lived scoped credential (fast path: CIDR + tool + resource + intent claims). Every action the agent takes passes through a reference monitor split into two planes: a control plane (MCP server) that checks scope and signs logs, and an enforcement plane (kernel) that blocks off-scope packets and signs breach events. In-scope traffic reaches allowlisted targets and is logged to a tamper-evident Merkle attestation log. Off-scope traffic is dropped at the kernel and emits a signed breach event that drives slashing in an optional economic bonding layer.
+The first diagram shows the full accountability stack — the target architecture; see [What is enforced today](#what-is-enforced-today) for which parts exist. An agent receives a ledger-anchored identity (slow path: DID registration) and a short-lived scoped credential (fast path: CIDR + tool + resource + intent claims). Every action the agent takes passes through a reference monitor split into two planes: a control plane (MCP server) that checks scope and signs logs, and an enforcement plane where the kernel blocks off-scope packets and the enforcer daemon signs the resulting breach events. In-scope traffic reaches allowlisted targets and is logged to a tamper-evident Merkle attestation log. Off-scope traffic is dropped at the kernel and emits a signed breach event that drives slashing in an optional economic bonding layer.
 
 ![Kernel egress enforcement — packet path](docs/kernel_egress_enforcement_packet_path.svg)
 
@@ -33,11 +33,13 @@ Warden is a v0 working prototype. The claims below are exactly what the demo pro
 
 The unconditional deny list (`169.254.169.254/32`, `127.0.0.0/8`, `10.200.0.0/16`, `fd00:ec2::254/128`, `::1/128`, `fe80::/10`) is hard-coded before any `targets`-derived accept rules. No credential claim can override it.
 
+Out of scope for v0: egress is scoped by IP, not content — application-layer exfiltration through an allowed CIDR, DNS-based egress (targets are raw CIDRs; there is no name-resolution story yet), and covert channels within permitted destinations are not addressed. [SECURITY.md](SECURITY.md) defines the bypass surface that is in scope.
+
 ---
 
 ## See it run
 
-**Linux** (requires root, nftables, Go 1.26+):
+**Linux (Debian/Ubuntu)** (requires root, nftables, Go 1.26+):
 
 ```bash
 ./scripts/setup.sh        # installs Go, Python deps, kernel tools
@@ -61,14 +63,14 @@ docker run --rm -it --privileged \
      python3 demo/run_demo.py'
 ```
 
-Example output (breach detection and clearing):
+Example output (excerpted from the full run in demo/README.md):
 
 ```
   [3b] signed breach events (GET /sessions/{id}/events)
   PASS  breach events count  (2 events received)
   PASS  event[0] Ed25519 signature  (breach_id=a1b2c3d4...)
   PASS  event[1] Ed25519 signature  (breach_id=e5f6a7b8...)
-
+  ...
   PASS  slash_event executed  (2 breach(es) slashed)
   PASS  agent reputation decremented  (100 → 80)
   PASS  session.terminated_at set  (clearing killed the session)
@@ -93,7 +95,7 @@ demo/       end-to-end demo: rogue recon agent, enforcement assertions, clearing
 clearing/   Python clearing service — breach confirmation, reputation slashing, session kill
 docs/       architecture diagrams, enforcer wiki, slashing policy, canonicalization spec
 scripts/    setup.sh (prereq bootstrap), install-enforcer.sh (systemd), smoke.sh, verify-parity.sh
-tests/      phase-gate test suites (pytest + Go)
+tests/      phase-gate pytest suites (Go tests live in enforcer/)
 infra/      Docker Compose — Rekor stack, Postgres
 ```
 
