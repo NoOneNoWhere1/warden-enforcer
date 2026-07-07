@@ -1,0 +1,20 @@
+{
+  "_comment": "Frozen cross-language conformance vector for Warden breach-event signing. Every attester runtime (Rust enforcer, Python MCP server, .NET API) MUST reproduce canonical_json byte-for-byte from `event` (minus the signature field) using RFC 8785 (JCS), and MUST reproduce signature_b64url by Ed25519-signing those bytes with the key derived from private_key_seed_hex. Do not edit these values; changing them silently breaks every previously signed event. See docs/breach-event-canonicalization.md.",
+  "scheme": "RFC8785-JCS+Ed25519",
+  "private_key_seed_hex": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+  "public_key_b64url": "ebVWLo_mVPlAeLES6KmLp5AfhTrmlb7X4OORC60ElmQ",
+  "event": {
+    "agent_id": "agent-conformance-001",
+    "attester": "warden-enforcer",
+    "attester_key_id": "key-conformance-001",
+    "breach_id": "00000000-0000-4000-8000-000000000001",
+    "layer": "network",
+    "session_id": "sess-conformance-001",
+    "signature": "VBOK2RJhXK1MfvLxabS79mLohq4h6VKhTVH_IeeBH46B3btKDCT4gdnD9P_vXSzNSlKzc0CTv1D3WmrVPZUACA",
+    "timestamp": "2026-06-30T00:00:00+00:00",
+    "token_claim": "targets",
+    "violation": "attempted connection to 203.0.113.7:443 not in targets allowlist"
+  },
+  "canonical_json": "{\"agent_id\":\"agent-conformance-001\",\"attester\":\"warden-enforcer\",\"attester_key_id\":\"key-conformance-001\",\"breach_id\":\"00000000-0000-4000-8000-000000000001\",\"layer\":\"network\",\"session_id\":\"sess-conformance-001\",\"timestamp\":\"2026-06-30T00:00:00+00:00\",\"token_claim\":\"targets\",\"violation\":\"attempted connection to 203.0.113.7:443 not in targets allowlist\"}",
+  "signature_b64url": "VBOK2RJhXK1MfvLxabS79mLohq4h6VKhTVH_IeeBH46B3btKDCT4gdnD9P_vXSzNSlKzc0CTv1D3WmrVPZUACA"
+}

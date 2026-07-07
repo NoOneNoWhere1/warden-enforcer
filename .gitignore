@@ -1,0 +1,21 @@
+# Environment — never commit real secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Go build artifacts
+enforcer/bin/
+
+# Claude Code project settings
+.claude/
+docs/.claude/
+
+# Session context — local only
+context/
+
+# OS
+.DS_Store

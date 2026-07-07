@@ -1,0 +1,128 @@
+# Public variant of infra/compose.yml (installed as infra/compose.yml by scripts/export-public.sh).
+# SYNC: the postgres and gate-profile service blocks must stay identical to infra/compose.yml.
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-warden}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-warden}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── Rekor transparency log (E3.4 gate) ──────────────────────────────────────
+  # Real Rekor + Trillian + MySQL + Redis, used only by the breach-attestation
+  # gate (tests/phase1/test_breach_attestation.py). Council-mandated: the gate
+  # proves the rekord + Ed25519 second-signature design end-to-end against a
+  # real log — a stub is exactly what would have hidden B3. Gated behind the
+  # `gate` profile so the default dev stack and the phase-0 job never start it.
+  # Image tags/pins copied from sigstore/rekor v1.3.6 docker-compose.yml.
+  rekor-mysql:
+    profiles: ["gate"]
+    platform: linux/amd64
+    image: gcr.io/trillian-opensource-ci/db_server:v1.4.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=zaphod
+      - MYSQL_DATABASE=test
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=zaphod
+    restart: always
+    healthcheck:
+      test: ["CMD", "/etc/init.d/mysql", "status"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  rekor-redis:
+    profiles: ["gate"]
+    image: docker.io/redis:6.2
+    command: ["--bind", "0.0.0.0", "--appendonly", "yes", "--requirepass", "test"]
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "test", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  rekor-trillian-log-server:
+    profiles: ["gate"]
+    image: ghcr.io/sigstore/scaffolding/trillian_log_server@sha256:beffee16bb07b5cb051dc4e476d3a1063521ed5ae0b670efc7fe6f3507d94d2b
+    command:
+      - "--quota_system=noop"
+      - "--storage_system=mysql"
+      - "--mysql_uri=test:zaphod@tcp(rekor-mysql:3306)/test"
+      - "--rpc_endpoint=0.0.0.0:8090"
+      - "--http_endpoint=0.0.0.0:8091"
+      - "--alsologtostderr"
+    restart: always # retry while mysql starts
+    depends_on:
+      rekor-mysql:
+        condition: service_healthy
+
+  rekor-trillian-log-signer:
+    profiles: ["gate"]
+    image: ghcr.io/sigstore/scaffolding/trillian_log_signer@sha256:79d57af375cfa997ed5452cc0c02c0396d909fcc91d11065586f119490aa9214
+    command:
+      - "--quota_system=noop"
+      - "--storage_system=mysql"
+      - "--mysql_uri=test:zaphod@tcp(rekor-mysql:3306)/test"
+      - "--rpc_endpoint=0.0.0.0:8090"
+      - "--http_endpoint=0.0.0.0:8091"
+      - "--force_master"
+      - "--alsologtostderr"
+    restart: always
+    depends_on:
+      rekor-mysql:
+        condition: service_healthy
+
+  rekor-server:
+    profiles: ["gate"]
+    platform: linux/amd64
+    image: gcr.io/projectsigstore/rekor-server:v1.3.6
+    # The published image's entrypoint is already `rekor-server`; the upstream
+    # compose repeats it as the first arg, which crash-loops as an unknown
+    # subcommand. Start from `serve`.
+    environment:
+      - TMPDIR=/var/run/attestations
+    command:
+      - "serve"
+      - "--trillian_log_server.address=rekor-trillian-log-server"
+      - "--trillian_log_server.port=8090"
+      - "--redis_server.address=rekor-redis"
+      - "--redis_server.password=test"
+      - "--redis_server.port=6379"
+      - "--rekor_server.address=0.0.0.0"
+      - "--rekor_server.signer=memory"
+      - "--enable_attestation_storage"
+      - "--attestation_storage_bucket=file:///var/run/attestations"
+      - "--enable_stable_checkpoint"
+      - "--search_index.storage_provider=mysql"
+      - "--search_index.mysql.dsn=test:zaphod@tcp(rekor-mysql:3306)/test"
+    volumes:
+      - rekor_attestations:/var/run/attestations
+    restart: always
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      # The signer is listed so `up -d rekor-server` starts the whole chain:
+      # without it Trillian never sequences entries and every submit 500s
+      # after a long hang. depends_on only orders start-up, which is enough.
+      - rekor-trillian-log-server
+      - rekor-trillian-log-signer
+      - rekor-redis
+    # No container healthcheck: the published image is distroless (no curl/
+    # wget). Readiness is polled from the host in the gate job's wait step.
+
+volumes:
+  postgres_data:
+  rekor_attestations:

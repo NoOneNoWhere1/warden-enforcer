@@ -1,0 +1,117 @@
+[
+  {
+    "canonical": "{\"violation\":\"line1\\nline2\\ttab\"}",
+    "input": "{\"violation\":\"line1\\nline2\\ttab\"}",
+    "name": "newline_tab"
+  },
+  {
+    "canonical": "{\"violation\":\"\\u0000\\u0001\\u001f end\"}",
+    "input": "{\"violation\":\"\\u0000\\u0001\\u001f end\"}",
+    "name": "low_control_chars"
+  },
+  {
+    "canonical": "{\"violation\":\"path \\\"C:\\\\temp\\\\x\\\" quoted\"}",
+    "input": "{\"violation\":\"path \\\"C:\\\\temp\\\\x\\\" quoted\"}",
+    "name": "quote_backslash"
+  },
+  {
+    "canonical": "{\"violation\":\"CR\\r LF\\n quote\\\" back\\\\ end\"}",
+    "input": "{\"violation\":\"CR\\r LF\\n quote\\\" back\\\\ end\"}",
+    "name": "carriage_return_mix"
+  },
+  {
+    "canonical": "{\"violation\":\"delchar\"}",
+    "input": "{\"violation\":\"del\\u007fchar\"}",
+    "name": "del_char_unescaped"
+  },
+  {
+    "canonical": "{\"violation\":\"a/b/c\"}",
+    "input": "{\"violation\":\"a/b/c\"}",
+    "name": "forward_slash"
+  },
+  {
+    "canonical": "{\"violation\":\"<script> & co\"}",
+    "input": "{\"violation\":\"<script> & co\"}",
+    "name": "html_chars"
+  },
+  {
+    "canonical": "{\"violation\":\"a b c\"}",
+    "input": "{\"violation\":\"a\\u2028b\\u2029c\"}",
+    "name": "js_line_separators"
+  },
+  {
+    "canonical": "{\"violation\":\"café naïve résumé\"}",
+    "input": "{\"violation\":\"café naïve résumé\"}",
+    "name": "accents"
+  },
+  {
+    "canonical": "{\"violation\":\"访问了禁止的端点 メタデータ\"}",
+    "input": "{\"violation\":\"访问了禁止的端点 メタデータ\"}",
+    "name": "cjk"
+  },
+  {
+    "canonical": "{\"violation\":\"blocked 🚫 egress 🔥\"}",
+    "input": "{\"violation\":\"blocked 🚫 egress 🔥\"}",
+    "name": "emoji"
+  },
+  {
+    "canonical": "{\"violation\":\"𝕎arden 𐍈 𝄞\"}",
+    "input": "{\"violation\":\"𝕎arden 𐍈 𝄞\"}",
+    "name": "astral_plane_string"
+  },
+  {
+    "canonical": "{\"violation\":\"a\\bb\\fc\"}",
+    "input": "{\"violation\":\"a\\bb\\fc\"}",
+    "name": "backspace_formfeed"
+  },
+  {
+    "canonical": "{\"e\":2,\"z\":3,\"é\":1}",
+    "input": "{\"é\":1,\"e\":2,\"z\":3}",
+    "name": "accented_key_sort"
+  },
+  {
+    "canonical": "{\"a\":3,\"あ\":2,\"中\":1}",
+    "input": "{\"中\":1,\"あ\":2,\"a\":3}",
+    "name": "cjk_key_sort"
+  },
+  {
+    "canonical": "{\"𝄞\":\"astral\",\"￿\":\"bmp-max\"}",
+    "input": "{\"𝄞\":\"astral\",\"￿\":\"bmp-max\"}",
+    "name": "astral_key_vs_bmp_max"
+  },
+  {
+    "canonical": "{\"\":1,\"a\":2}",
+    "input": "{\"\":1,\"a\":2}",
+    "name": "empty_string_key"
+  },
+  {
+    "canonical": "{\"a\":0,\"z\":{\"a\":[{\"x\":2,\"y\":1}],\"é\":1}}",
+    "input": "{\"z\":{\"é\":1,\"a\":[{\"y\":1,\"x\":2}]},\"a\":0}",
+    "name": "nested_unicode_keys"
+  },
+  {
+    "canonical": "{\"n\":1e+21}",
+    "input": "{\"n\":1e21}",
+    "name": "num_1e21"
+  },
+  {
+    "canonical": "{\"n\":0}",
+    "input": "{\"n\":-0}",
+    "name": "num_negative_zero"
+  },
+  {
+    "canonical": "{\"n\":1}",
+    "input": "{\"n\":1.0}",
+    "name": "num_one_point_zero"
+  },
+  {
+    "canonical": "{\"n\":9007199254740992}",
+    "input": "{\"n\":9007199254740992}",
+    "name": "num_2_pow_53"
+  },
+  {
+    "canonical": "{\"a\":1e-7,\"b\":0.000001}",
+    "input": "{\"a\":1e-7,\"b\":1e-6}",
+    "name": "num_small_boundary"
+  }
+]

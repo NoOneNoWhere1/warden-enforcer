@@ -1,0 +1,29 @@
+table ip warden_sess_overlap { }
+delete table ip warden_sess_overlap
+table ip warden_sess_overlap {
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+        ip daddr 169.254.169.254/32 log prefix "warden:sess-overlap:" group 1 drop
+        ip daddr 127.0.0.0/8 log prefix "warden:sess-overlap:" group 1 drop
+        ip daddr 10.200.0.0/16 log prefix "warden:sess-overlap:" group 1 drop
+        ct state established,related accept
+        ip daddr 169.254.0.0/16 accept
+        log prefix "warden:sess-overlap:" group 1 counter
+    }
+    chain postrouting {
+        type nat hook postrouting priority srcnat; policy accept;
+        masquerade
+    }
+}
+table ip6 warden_sess_overlap { }
+delete table ip6 warden_sess_overlap
+table ip6 warden_sess_overlap {
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+        ip6 daddr fd00:ec2::254/128 log prefix "warden:sess-overlap:" group 1 drop
+        ip6 daddr ::1/128 log prefix "warden:sess-overlap:" group 1 drop
+        ip6 daddr fe80::/10 log prefix "warden:sess-overlap:" group 1 drop
+        ct state established,related accept
+        log prefix "warden:sess-overlap:" group 1 counter
+    }
+}
