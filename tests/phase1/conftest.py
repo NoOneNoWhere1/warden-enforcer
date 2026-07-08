@@ -71,8 +71,8 @@ def enforcer(tmp_path_factory):
     env["ENFORCER_KEY_ID"] = "gate-key-001"
     env["ENFORCER_SIGNING_KEY"] = base64.urlsafe_b64encode(os.urandom(32)).rstrip(b"=").decode()
     env["ENFORCER_SOCKET"] = str(socket_path)
-    # E3.3/E3.4: durable spool in the test tempdir (default path needs root
-    # and would collide across modules). ENFORCER_REKOR_URL flows through from
+    # Durable spool in the test tempdir: the default path needs root
+    # and would collide across modules. ENFORCER_REKOR_URL flows through from
     # the environment above — set by CI's gate job, unset locally.
     env["ENFORCER_OUTBOX"] = str(outbox_path)
 
@@ -116,8 +116,8 @@ def enforcer(tmp_path_factory):
     # namespaces (and their wdn* veth uplinks) of any sessions the module
     # left behind, and the next module's fresh enforcer restarts its uplink
     # allocator at wdn0 — colliding with the orphans. Sweep them here.
-    # Startup reconciliation is the known E2 deferral; this is its
-    # test-harness mirror, not a substitute.
+    # (Startup reconciliation — re-adopting pre-existing namespaces — is not yet
+    # implemented; this sweep is a test-only workaround.)
     netns_list = subprocess.run(["ip", "netns", "list"], capture_output=True, text=True).stdout
     for line in netns_list.splitlines():
         name = line.split()[0]

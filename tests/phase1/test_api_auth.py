@@ -1,5 +1,5 @@
 """
-Phase 1d gate test (E2) — API authentication boundary.
+API authentication boundary gate tests.
 
 The enforcer has no TCP listener. Authentication is the Unix socket's file
 permissions: only the owning user/group may connect; everyone else is rejected

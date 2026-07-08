@@ -1,4 +1,4 @@
-"""Phase 5 test fixtures and helpers."""
+"""Clearing service test fixtures and helpers."""
 
 import base64
 import hashlib

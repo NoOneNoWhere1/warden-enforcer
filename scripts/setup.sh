@@ -99,7 +99,7 @@ else
             $SUDO apt-get update -q
             _apt python3 python3-pip
         fi
-        # ponytail: --break-system-packages matches the demo Docker one-liner; switch to a venv if conflicts arise
+        # --break-system-packages matches the demo Docker one-liner; switch to a venv if conflicts arise
         pip3 install --break-system-packages -r "$REPO_ROOT/requirements-test.txt"
         G2_STATUS="installed"
     else

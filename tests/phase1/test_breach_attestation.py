@@ -1,11 +1,11 @@
 """
-E3.4 gate — the E3 milestone end to end.
+End-to-end breach attestation gate.
 
 An off-scope egress attempt must become: (1) a signed breach event served by
 the API, (2) a durable, fsync'd entry in the outbox spool, and (3) an entry
-accepted into a REAL Rekor transparency log — the council made a real Rekor
-mandatory here (a stub is exactly what would have hidden B3). The loss
-counter must read zero on the clean path.
+accepted into a REAL Rekor transparency log (a stub would not prove the
+submission path, so the test requires a real log). The loss counter must read
+zero on the clean path.
 
 Requires ENFORCER_REKOR_URL to point at a running Rekor (the compose `gate`
 profile). Skips cleanly when unset so local `pytest tests/phase1` still runs

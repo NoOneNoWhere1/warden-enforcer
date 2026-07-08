@@ -3,8 +3,8 @@
 **Version:** 1.1
 **Date:** 2026-07-06
 **Status:** Active
-**Bonding model:** Path A — Reputational (decided 27 June 2026)
-**Required before:** Phase 5 (bonding) code begins
+**Bonding model:** Reputational (Path A)
+**Applies to:** bonding and clearing service
 
 ---
 

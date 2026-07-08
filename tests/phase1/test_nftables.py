@@ -1,5 +1,5 @@
 """
-Phase 1b gate tests — nftables rule enforcement.
+nftables rule enforcement gate tests.
 
 These tests drive the real enforcer binary over its Unix socket and assert that
 the Linux kernel firewall is programmed correctly on session create/destroy.
@@ -48,7 +48,7 @@ def _credential(session_id: str, targets: list[str]) -> dict:
     }
 
 
-# ── Phase 1b: nftables rule programming ──────────────────────────────────────
+# ── nftables rule programming ────────────────────────────────────────────────
 
 
 def test_session_create_programs_ipv4_rules(enforcer):

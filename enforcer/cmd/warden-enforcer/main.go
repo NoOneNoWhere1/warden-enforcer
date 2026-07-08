@@ -24,11 +24,11 @@ func main() {
 		fatal("fatal: %v", err)
 	}
 
-	// Bounded raw-drop channel (E3.2): listeners send packet facts,
-	// non-blocking; the single consumer below signs under the AppState lock.
+	// Bounded raw-drop channel: listeners send packet facts, non-blocking;
+	// the single consumer below signs under the AppState lock.
 	drops := make(chan sandbox.Drop, 256)
 
-	// Durable attestation spool (E3.3), write-ahead of Rekor. Fail closed:
+	// Durable attestation spool, write-ahead of Rekor. Fail closed:
 	// an enforcer that cannot durably record breaches must not run.
 	spool, err := outbox.Open(cfg.OutboxPath)
 	if err != nil {
@@ -77,8 +77,8 @@ func listen(socketPath string) (net.Listener, error) {
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return nil, fmt.Errorf("cannot create %s: %w", dir, err)
 	}
-	// The socket is the entire authentication boundary (E2): any process
-	// that can connect can create or destroy sessions. Lock the directory
+	// The socket is the entire authentication boundary: any process that can
+	// connect can create or destroy sessions. Lock the directory
 	// to the owner so only the warden user/group can even reach the socket.
 	//nolint:gosec // G302: dir mode 0700 mirrors main.rs:59 — parity-preserving
 	if err := os.Chmod(dir, 0o700); err != nil {

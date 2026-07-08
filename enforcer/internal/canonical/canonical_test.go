@@ -62,9 +62,9 @@ func TestHTMLCharsAreNotEscaped(t *testing.T) {
 }
 
 func TestJCSDifferentialCorpusMatchesRust(t *testing.T) {
-	// testdata captured from serde_jcs via a temporary Rust scratch
-	// (deleted in the same commit). Weighted toward violation-field string
-	// escaping — the live divergence surface (risk R1).
+	// testdata captured from serde_jcs. Weighted toward violation-field
+	// string escaping — the primary divergence surface between json.Marshal
+	// and serde_jcs.
 	raw, err := os.ReadFile("testdata/jcs_differential.json")
 	if err != nil {
 		t.Fatal(err)

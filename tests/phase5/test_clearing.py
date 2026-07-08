@@ -1,4 +1,4 @@
-"""Phase 5 clearing service tests — all non-linux_only."""
+"""Clearing service tests — all non-linux_only."""
 
 import base64
 import decimal
@@ -670,7 +670,7 @@ def test_b1_breach_to_slash_end_to_end(enforcer, transit_guest, dummy_targets):
                 "WHERE operator_id = %s",
                 (_B1_OPERATOR,),
             )
-            # ponytail: guard slash inserted directly — avoids a second enforcer trigger
+            # guard slash inserted directly — avoids a second enforcer trigger
             cur.execute(
                 "INSERT INTO slash_event "
                 "(session_id, breach_id, agent_id, attester_key_id, operator_id, "

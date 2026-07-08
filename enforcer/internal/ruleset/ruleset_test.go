@@ -43,8 +43,8 @@ func TestDefaultChainPolicyIsDrop(t *testing.T) {
 }
 
 func TestTableNameIsSanitizedForNft(t *testing.T) {
-	// nftables identifiers cannot contain hyphens. Since E3.1 the raw
-	// session ID legitimately appears inside the quoted log prefix, where
+	// nftables identifiers cannot contain hyphens. The raw session ID
+	// legitimately appears inside the quoted log prefix, where
 	// hyphens are legal — strip those before asserting no identifier
 	// carries a hyphen.
 	script := New("sess-abc-123", nil).Render()
@@ -146,7 +146,7 @@ func TestUnconditionalDenyPrecedesAcceptRules(t *testing.T) {
 
 func TestEgressFilterUsesForwardHookNotOutput(t *testing.T) {
 	// Guest egress transits the namespace (forwarded), so an output hook
-	// would never see it. This is the load-bearing fix for the E1 substrate.
+	// would never see it.
 	script := emptyRuleset()
 	if !strings.Contains(script, "hook forward") {
 		t.Fatal("filter must hook forward")
@@ -214,11 +214,9 @@ func TestMetadataIPIsBlockedEvenWhenInsideAllowedCidr(t *testing.T) {
 // ── Rust byte-goldens + gate tokens (not ledger rows) ────────────────────────
 
 // TestRenderMatchesRustGoldens byte-compares against scripts rendered by the
-// Rust implementation (captured via a temporary examples/ scratch, deleted in
-// the same commit). Any divergence in table naming, rule order, whitespace,
+// Rust implementation. Any divergence in table naming, rule order, whitespace,
 // or CIDR re-serialization fails here before it can reach the live gate.
-// Goldens re-captured from the Go renderer at E3.1 (E3 log rules +
-// uplink-pool deny) — third re-capture, Go-owned; see PARITY.md.
+// Goldens include the NFLOG breach-logging and uplink-pool deny rules; see PARITY.md.
 func TestRenderMatchesRustGoldens(t *testing.T) {
 	cases := []struct {
 		name      string
@@ -247,7 +245,7 @@ func TestRenderMatchesRustGoldens(t *testing.T) {
 	}
 }
 
-// TestGateTokensPresent pins the literal strings the phase-1 linux gate
+// TestGateTokensPresent pins the literal strings the linux gate
 // (tests/phase1/test_nftables.py) greps for in `nft list ruleset` output.
 func TestGateTokensPresent(t *testing.T) {
 	script := emptyRuleset()
@@ -258,7 +256,7 @@ func TestGateTokensPresent(t *testing.T) {
 	}
 }
 
-// ── E3.1 (E3): breach logging + uplink-pool deny ──────────────────────────────
+// ── Breach logging + uplink-pool deny ────────────────────────────────────────
 
 func TestUplinkPoolIsUnconditionallyDenied(t *testing.T) {
 	// Session A's guest must not reach session B's uplink even when the
@@ -328,7 +326,7 @@ func TestCatchAllLogIsLastRuleInEachForwardChain(t *testing.T) {
 
 func TestLogPrefixCarriesSessionID(t *testing.T) {
 	// The prefix identifies the session so a breach event does not depend
-	// on which nflog socket heard the packet (E3.2 listener contract).
+	// on which nflog socket heard the packet (nflog listener contract).
 	script := New("sess-prefix-42", nil).Render()
 	if !strings.Contains(script, `log prefix "warden:sess-prefix-42:" group 1`) {
 		t.Fatal("log prefix must carry the raw session id")

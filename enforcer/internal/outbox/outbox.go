@@ -1,9 +1,9 @@
-// Package outbox is the enforcer's durable attestation record (E3.3): an
+// Package outbox is the enforcer's durable attestation record: an
 // append-only JSONL spool written (and fsync'd) BEFORE any Rekor attempt,
 // plus a submitter that drains it into Rekor behind an fsync'd checkpoint
-// watermark. The Postgres attestation_outbox gains its writer in a later
-// phase from a DB-speaking component that picks up this spool — the
-// enforcer stays DB-free.
+// watermark. The enforcer writes only this JSONL spool; a separate
+// DB-speaking component is expected to ingest it into attestation_outbox —
+// the enforcer stays DB-free.
 package outbox
 
 import (
@@ -29,9 +29,9 @@ import (
 // touching a private key.
 type Entry struct {
 	Event breachevent.Event `json:"event"`
-	// SecondSig is base64url Ed25519 over canonical(RekorPayload()) — the
-	// council B3 design; Event.Signature and the conformance vector are
-	// untouched.
+	// SecondSig is base64url Ed25519 over canonical(RekorPayload()). The
+	// primary event signature (Event.Signature) and the conformance vector
+	// are untouched; SecondSig is a separate signature over the Rekor payload.
 	SecondSig string `json:"second_sig"`
 	// PublicKeyPEM is the PKIX PEM of the key that made SecondSig.
 	PublicKeyPEM string `json:"public_key_pem"`
@@ -168,7 +168,7 @@ func (s *Spool) SetCheckpoint(off int64) error {
 }
 
 // truncateTornTail cuts the spool back to its last complete line.
-// ponytail: reads the whole file; the spool never rotates in v1 — add
+// Reads the whole file; the spool never rotates in v1 — add
 // rotation + a tail-window scan when ops needs it.
 func truncateTornTail(path string) error {
 	//nolint:gosec // G304: same operator-configured spool path as Open

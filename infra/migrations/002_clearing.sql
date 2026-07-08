@@ -1,4 +1,4 @@
--- Warden Phase 5 clearing schema additions
+-- Warden clearing schema additions
 --
 -- Fresh init: this file runs automatically alongside 001_initial_schema.sql
 -- because postgres docker-entrypoint-initdb.d processes *.sql files in

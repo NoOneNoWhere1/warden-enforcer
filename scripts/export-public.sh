@@ -128,7 +128,7 @@ fi
 # ── Clean bytecode ────────────────────────────────────────────────────────────
 # Must run AFTER verification: py_compile above regenerates __pycache__.
 
-# ponytail: -prune stops find from descending into matched dirs; + batches rm calls
+# -prune stops find from descending into matched dirs; + batches rm calls
 find "$TARGET" -name __pycache__ -type d -prune -exec rm -rf {} +
 find "$TARGET" \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
@@ -137,7 +137,7 @@ find "$TARGET" \( -name '*.pyc' -o -name '*.pyo' \) -delete
 echo ""
 echo "DONE: $TARGET"
 echo ""
-echo "Next steps (publish session):"
+echo "Next steps:"
 echo "  cd $TARGET"
 echo "  git init -b main && git add . && git commit -m \"Initial public release\""
 echo "  gh repo create NoOneNoWhere1/warden-enforcer --public --source=. --remote=origin --push"

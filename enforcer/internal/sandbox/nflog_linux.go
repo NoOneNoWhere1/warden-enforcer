@@ -20,16 +20,14 @@ const nflogGroup = 1
 
 // startDropListener opens an NFLOG socket inside the session's network
 // namespace and forwards parsed packet facts to s.drops. NFLOG delivery is
-// per-netns, so the socket must live where the rules fire — this reverses
-// M13's "no Go code inside the netns" decision exactly as that plan
-// anticipated.
+// per-netns, so the socket must live where the rules fire.
 //
 // The returned stop func cancels the listener and WAITS for it to release
 // the namespace: the nflog socket and the listener thread's current netns
 // both hold kernel references, and `ip netns del` only unlinks the name — a
 // still-referenced namespace (and its veth pair) would outlive the session.
 // The caller invokes stop under the AppState lock on the controller thread
-// (Amendment 6 — no lock here). Send is non-blocking: a full channel
+// (no lock here — the caller holds the AppState lock). Send is non-blocking: a full channel
 // increments dropOverflow instead of stalling the socket reader
 // (attestation is best-effort with a visible loss counter; containment
 // never depends on this path).

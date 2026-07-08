@@ -189,7 +189,7 @@ func TestConfigOutOfRangePortReturnsInvalidError(t *testing.T) {
 	assertInvalid(t, err)
 }
 
-// ── E3.3: outbox + Rekor configuration ───────────────────────────────────────
+// ── Outbox + Rekor configuration ─────────────────────────────────────────────
 
 func TestConfigOutboxDefaultsToVarLib(t *testing.T) {
 	cfg := mustLoad(t, baseEnv("k"))

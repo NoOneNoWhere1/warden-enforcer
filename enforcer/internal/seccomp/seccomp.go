@@ -1,9 +1,9 @@
 // Package seccomp mirrors enforcer/src/seccomp.rs: an OCI-compatible
 // seccomp profile builder for Warden agent sandboxes.
 //
-// Pure and unwired — nothing applies the profile yet; it is consumed at the
-// runsc/gVisor integration phase. Plain structs on purpose: the
-// opencontainers/runtime-spec dependency arrives with runsc, not before.
+// Applying the profile requires the runsc/gVisor integration and its
+// opencontainers/runtime-spec dependency; plain structs keep this package
+// free of that dependency.
 package seccomp
 
 type Action string

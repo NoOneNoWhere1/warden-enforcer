@@ -1,8 +1,8 @@
 # Parity Ledger — Rust → Go test identity mapping
 
-**M0 baseline (Rust, main @ 385098b, CI run 2026-07-02 — all green):**
-111 unit + 4 conformance tests; linux-gate 9/9 (test_api_auth.py 2, test_nftables.py 7);
-phase 0 19/19. The Go port must reproduce this set identically (M10.5 / M11 verify).
+**Rust baseline (main @ 385098b, CI run 2026-07-02 — all green):**
+111 unit + 4 conformance tests; linux-gate 9/9 (test_api_auth.py 2, test_nftables.py 7).
+The Go port must reproduce this test set identically.
 
 One row per Rust test function. A row is satisfied when its Go test exists
 in enforcer/ (verified by scripts/verify-parity.sh — identity, not counts).
