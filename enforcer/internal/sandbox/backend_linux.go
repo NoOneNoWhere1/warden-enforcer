@@ -27,7 +27,7 @@ type LinuxSandbox struct {
 	// single consumer in the api package turns them into signed events.
 	drops chan<- Drop
 	// listeners maps session → nflog listener stop func. No mutex — mutated
-	// only under the api AppState lock, same as uplinks (Amendment 6).
+	// only under the api AppState lock, same as uplinks.
 	listeners map[string]func()
 	// lost counts Drops discarded per session because the channel was full
 	// (non-blocking send). Map mutated only under the AppState lock; the
@@ -166,7 +166,7 @@ func (s *LinuxSandbox) provisionUplink(sessionID, ns string) error {
 // BackendError — the same reporting shape as the namespace/nft shell-outs
 // above.
 func run(args []string) error {
-	//nolint:gosec // G204: argv varies only in the netnsName-derived namespace and allocator-derived interface/addresses — same Amendment 8 shell-out budget as the sites above
+	//nolint:gosec // G204: argv varies only in the netnsName-derived namespace and allocator-derived interface/addresses — operator-controlled inputs, same rationale as the other shell-outs in this file
 	cmd := exec.Command(args[0], args[1:]...)
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr

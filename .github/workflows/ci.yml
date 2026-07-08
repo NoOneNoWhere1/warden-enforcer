@@ -1,4 +1,4 @@
-# Public CI (installed as .github/workflows/ci.yml by scripts/export-public.sh). phase0 tests and kvm-probe are private-repo-only.
+# CI workflow for the Warden enforcer and clearing service.
 name: CI
 
 on:
@@ -41,7 +41,7 @@ jobs:
 
   # ── Python — compose + clearing unit tests ────────────────────────────────
   python:
-    name: Python — phase 5 unit tests
+    name: Python — clearing unit tests
     runs-on: ubuntu-latest
     env:
       POSTGRES_USER: postgres
@@ -73,14 +73,14 @@ jobs:
         env:
           POSTGRES_PASSWORD: warden
 
-      - name: Phase 5 unit tests
+      - name: Clearing unit tests
         run: python -m pytest tests/phase5/ -v -m "not linux_only"
 
-  # ── Linux gate — network isolation (Phase 1+) ─────────────────────────────
+  # ── Linux gate — network isolation ───────────────────────────────────────────
   # Requires real Linux kernel: nftables, network namespaces. Runs the
   # enforcer binary built from source; needs root for nftables. The gate runs
   # the real binary and fails on any test failure — no exit-5 green-by-skip
-  # tolerance. Both the E2 auth tests (test_api_auth.py) and the nftables
+  # tolerance. Both the auth tests (test_api_auth.py) and the nftables
   # tests (test_nftables.py) pass against the Go LinuxSandbox backend.
   linux-gate:
     name: Linux gate — network isolation
@@ -113,10 +113,11 @@ jobs:
       - name: Install test dependencies
         run: pip install -r requirements-test.txt
 
-      # Real Rekor for the E3.4 breach-attestation gate (council-mandated —
-      # no stub). Profiled so only the gate pulls this 5-container stack.
-      # POSTGRES_PASSWORD is compose-interpolation ballast: the file's
-      # postgres service requires it even though the gate never starts it.
+      # Real Rekor for the breach-attestation gate — no stub: the gate verifies
+      # the full rekord + Ed25519 second-signature path. Profiled so only the
+      # gate pulls this 5-container stack. POSTGRES_PASSWORD is
+      # compose-interpolation ballast: the file's postgres service requires it
+      # even though the gate never starts it.
       - name: Start Rekor transparency log
         run: docker compose -f infra/compose.yml --profile gate up -d rekor-server
         env:
@@ -144,7 +145,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: warden
 
-      - name: Phase 1 gate tests
+      - name: Enforcement gate tests
         # Use the setup-python interpreter explicitly: `sudo python` would pick
         # the system Python, which lacks the installed test deps. The enforcer
         # binary is given an ephemeral signing key by the test fixture;
@@ -154,7 +155,7 @@ jobs:
           sudo -E ENFORCER_REKOR_URL=http://localhost:3000 "$PYTHON" -m pytest tests/phase1/ -v -m linux_only
         shell: bash
 
-      - name: Phase 5 gate tests
+      - name: Clearing gate tests
         run: |
           PYTHON="$(command -v python)"
           sudo -E ENFORCER_REKOR_URL=http://localhost:3000 POSTGRES_PASSWORD=warden "$PYTHON" -m pytest tests/phase5/ -v -m linux_only

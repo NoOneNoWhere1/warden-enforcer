@@ -33,7 +33,7 @@ type Backend interface {
 	Destroy(sessionID string) error
 	// LostDrops reports how many packet facts the session's nflog listener
 	// discarded because the drops channel was full — part of the visible
-	// loss counter (E3.3).
+	// loss counter.
 	LostDrops(sessionID string) uint64
 }
 
@@ -47,7 +47,7 @@ func (NoopBackend) LostDrops(string) uint64          { return 0 }
 
 // Controller tracks which sessions have an active sandbox.
 //
-// PARITY (Amendment 6): no mutex here on purpose. Rust nests the controller
+// PARITY: no mutex here on purpose. Rust nests the controller
 // inside the single Arc<Mutex<AppState>> (api.rs:39-48); the Go api package
 // mirrors that with one AppState lock. A second lock here would invent
 // lock-ordering questions Rust never had.

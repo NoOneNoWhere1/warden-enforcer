@@ -4,9 +4,8 @@
 // Render produces an nft script suitable for `nft -f`. The script creates
 // two named tables (`table ip` and `table ip6`) whose names embed the
 // session ID, allowing multiple sessions to coexist without collision.
-// Output was byte-identical to the Rust renderer through M13; E3.1
-// added NFLOG breach logging and the uplink-pool deny, and the
-// testdata/*.nft goldens are Go-owned from that point (see PARITY.md).
+// Output includes NFLOG breach logging and the uplink-pool deny; the
+// testdata/*.nft goldens are Go-owned (see PARITY.md).
 package ruleset
 
 import (
@@ -62,9 +61,9 @@ func (r *Ruleset) Render() string {
 	table := r.tableName()
 	var out strings.Builder
 
-	// E3 breach signal: every denied packet logs to NFLOG group 1. The
-	// prefix carries the session ID so an event does not depend on which
-	// nflog socket heard it. Injection-safe without validation: the same
+	// Every denied packet logs to NFLOG group 1. The prefix carries the
+	// session ID so an event does not depend on which nflog socket heard it.
+	// Injection-safe without validation: the same
 	// session ID is rendered (hyphen-sanitized only) as the table
 	// identifier above any log rule, and every character that could escape
 	// this quoted string is invalid in an nft identifier — a hostile ID
@@ -92,10 +91,10 @@ func (r *Ruleset) Render() string {
 			fmt.Fprintf(&out, "        ip daddr %s accept\n", target)
 		}
 	}
-	// Catch-all breach log (B1): off-scope packets otherwise fall through
-	// to the chain policy, which cannot log — this rule is E3's signal
-	// source for genuine off-scope access. No verdict: the packet continues
-	// to the policy drop. The counter is the gate-test observable.
+	// Catch-all breach log: off-scope packets otherwise fall through to the
+	// chain policy, which cannot log — this rule is the signal source for
+	// genuine off-scope access. No verdict: the packet continues to the
+	// policy drop. The counter is the gate-test observable.
 	fmt.Fprintf(&out, "        %s counter\n", logStmt)
 	out.WriteString("    }\n")
 

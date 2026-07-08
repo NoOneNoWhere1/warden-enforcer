@@ -111,7 +111,7 @@ func TestPostSessionsDuplicateSessionIDReturns409(t *testing.T) {
 	}
 }
 
-// Amendment 4: the duplicate check precedes CIDR validation, so a request
+// The duplicate check precedes CIDR validation, so a request
 // that is both a duplicate and has a bad CIDR returns 409, not 422.
 func TestPostSessionsDuplicateSessionIDWithBadCIDRReturns409(t *testing.T) {
 	s := testState(t)

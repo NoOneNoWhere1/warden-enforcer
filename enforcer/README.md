@@ -6,7 +6,7 @@ Host-side daemon that provides network-layer containment for Warden agent sessio
 
 ## API Transport and Authentication
 
-**Decision: Unix domain socket (E2 gate requirement)**
+**Decision: Unix domain socket**
 
 The enforcer API is bound to a Unix domain socket at:
 
@@ -16,7 +16,7 @@ The enforcer API is bound to a Unix domain socket at:
 
 File permissions (`0660`, owned by `warden:warden`) enforce caller identity at the OS level. Only processes running as the `warden` user or group can reach the socket. Compose application services that need to call the enforcer must mount the socket path via a bind mount in `infra/compose.yml`.
 
-This means an unauthenticated TCP connection cannot exist — there is no TCP listener. An unauthorized caller receives a connection refusal at the filesystem level, not an HTTP 401. This is the E2 gate requirement.
+This means an unauthenticated TCP connection cannot exist — there is no TCP listener. An unauthorized caller receives a connection refusal at the filesystem level, not an HTTP 401.
 
 **Why Unix socket over mTLS:**
 - No TLS setup, no certificate lifecycle
@@ -42,7 +42,7 @@ GET    /enforcer/keys/{key_id} # key lookup — active or retired
 
 All endpoints are tested via `net/http/httptest` at the handler layer without a real socket or network. The router is Go's standard `net/http` ServeMux (Go 1.22+ method patterns) — no web framework.
 
-The E2 gate test (unauthorized caller rejected) is a `linux_only` pytest in `tests/phase1/test_api_auth.py` and runs in CI only.
+The authorization test (unauthorized caller rejected) is a `linux_only` pytest in `tests/phase1/test_api_auth.py` and runs in CI only.
 
 ---
 
@@ -75,6 +75,6 @@ ls -la /run/warden-enforcer/api.sock
 # Unit tests (any platform)
 go test -race ./...
 
-# Gate tests (Linux, requires root and nftables)
+# Linux integration tests (requires root and nftables)
 sudo -E python -m pytest tests/phase1/ -v -m linux_only
 ```

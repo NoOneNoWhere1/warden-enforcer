@@ -21,10 +21,10 @@ import (
 // slice — this does.
 const eventsCap = 256
 
-// Admission control (E3.3, council S2): a horizontal scan must not turn the
-// signer into a CPU sink or flood the spool. Tokens refill per second up to
-// the burst capacity; a drop arriving with no token is counted as lost.
-// ponytail: fixed rates; make them credential-driven if a deployment needs it.
+// Admission control: a horizontal scan must not turn the signer into a CPU
+// sink or flood the spool. Tokens refill per second up to the burst capacity;
+// a drop arriving with no token is counted as lost.
+// Fixed rates; make them credential-driven if a deployment needs it.
 const (
 	bucketBurst     = 20.0
 	bucketPerSecond = 5.0
@@ -36,7 +36,7 @@ type tokenBucket struct {
 }
 
 // ConsumeDrops is the single consumer of packet facts from the sandbox
-// nflog listeners (E3.2 / council B2): the only code that turns a Drop into
+// nflog listeners: the only code that turns a Drop into
 // a signed BreachEvent, and it does so under the one AppState lock — the
 // signing key never enters a netns goroutine. The durable spool append
 // happens here, outside the lock (this goroutine is the spool's only
@@ -67,8 +67,7 @@ func (s *AppState) ConsumeDrops(drops <-chan sandbox.Drop) {
 
 // recordDrop admits, signs, and stores one drop under the AppState lock,
 // returning the self-contained spool entry (event + second signature +
-// public key, per council B3 — replayable after key rotation without a
-// private key).
+// public key) — replayable after key rotation without a private key.
 func (s *AppState) recordDrop(d sandbox.Drop) (*outbox.Entry, bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -106,8 +105,8 @@ func (s *AppState) recordDrop(d sandbox.Drop) (*outbox.Entry, bool) {
 
 	evs := s.Events[d.SessionID]
 	if len(evs) >= eventsCap {
-		// ponytail: reslice+append reallocates the 256-slot array once per
-		// event at cap — fine at this size, ring-index it if cap ever grows.
+		// Reslice+append reallocates the 256-slot array once per event at
+		// cap — fine at this size, ring-index it if cap ever grows.
 		evs = evs[1:]
 		s.addLossLocked(d.SessionID, 1)
 	}

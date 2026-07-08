@@ -1,7 +1,7 @@
 // Package rekor submits breach-event attestations to a Rekor transparency
 // log as `rekord` entries — the one type that verifies pure Ed25519 at
-// intake (hashedrekord cannot; sigstore/rekor #851, proven by the pre-E3.3
-// spike). Stdlib net/http only: the API surface is a single POST.
+// intake (hashedrekord cannot; sigstore/rekor #851). Stdlib net/http only:
+// the API surface is a single POST.
 package rekor
 
 import (

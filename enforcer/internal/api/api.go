@@ -61,7 +61,7 @@ func (w *credentialWire) credential() (Credential, bool) {
 
 // AppState is the shared state across all handlers (api.rs:39-48).
 //
-// PARITY (Amendment 6): mu is the single lock over everything nested here,
+// PARITY: mu is the single lock over everything nested here,
 // mirroring Rust's Arc<Mutex<AppState>>. Handlers lock once at entry; no
 // second lock exists anywhere (the sandbox Controller has none by design).
 type AppState struct {
@@ -108,7 +108,7 @@ func Router(state *AppState) http.Handler {
 // 422 if the credential is malformed or any target CIDR is invalid, 500 on
 // sandbox backend failure.
 //
-// PARITY (Amendment 4): check order is contract — 409 duplicate precedes
+// PARITY: check order is contract — 409 duplicate precedes
 // 422 bad CIDR precedes 500 backend (api.rs:73 → :79 → :94).
 func (s *AppState) createSession(w http.ResponseWriter, r *http.Request) {
 	var wire credentialWire
@@ -205,9 +205,9 @@ func (s *AppState) getSessionEvents(w http.ResponseWriter, r *http.Request) {
 	if events == nil {
 		events = []breachevent.Event{} // nil marshals to null; the contract is []
 	}
-	// E3.3: the visible loss counter — "every breach attested" is
-	// best-effort, and this is where the effort's shortfall shows. A header
-	// keeps the response body (a bare array) contract-intact.
+	// Visible loss counter — "every breach attested" is best-effort, and
+	// this is where the effort's shortfall shows. A header keeps the
+	// response body (a bare array) contract-intact.
 	lost := s.EventLosses[id] + s.Sandbox.LostDrops(id)
 	w.Header().Set("X-Warden-Lost-Events", strconv.FormatUint(lost, 10))
 	writeJSON(w, http.StatusOK, events)

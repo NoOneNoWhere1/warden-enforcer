@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Smoke test for the Go enforcer binary (port plan Amendment 9) — the one DoD
-# gate runnable on a dev Mac. Non-Linux builds select the Noop sandbox
+# Smoke test for the Go enforcer binary — the one gate runnable on a dev Mac.
+# Non-Linux builds select the Noop sandbox
 # backend, so no root, netns, or nftables is needed. Exercises every API
 # status path and the JWK wire order over the real unix socket.
 set -euo pipefail
@@ -28,7 +28,7 @@ export ENFORCER_KEY_ID="smoke-key"
 ENFORCER_SIGNING_KEY="$(openssl rand -base64 32 | tr '+/' '-_' | tr -d '=\n')"
 export ENFORCER_SIGNING_KEY
 export ENFORCER_SOCKET="$SOCK"
-# E3.3: the attestation spool is always on; default path needs root.
+# The attestation spool is always on; the default path needs root.
 export ENFORCER_OUTBOX="$TMP/outbox.jsonl"
 
 "$BIN" 2>/dev/null &

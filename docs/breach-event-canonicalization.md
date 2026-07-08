@@ -27,8 +27,8 @@ re-deriving an ordering:
 | Runtime | Attester | Library |
 |---|---|---|
 | Go | `warden-enforcer` (network) | `github.com/gowebpki/jcs` (`enforcer/internal/canonical/canonical.go`) |
-| Python | `warden-mcp` (tool / intent) | a published RFC 8785 implementation (Phase 4) |
-| .NET | `warden-api` (resource) | a published RFC 8785 implementation (Phase 2/M5) |
+| Python | `warden-mcp` (tool / intent) | a published RFC 8785 implementation (planned) |
+| .NET | `warden-api` (resource) | a published RFC 8785 implementation (planned) |
 
 > Do **not** rely on a language's default JSON serializer "happening" to sort
 > keys. That is the fragility this document exists to remove: an incidental

@@ -1,5 +1,5 @@
-// Uplink subnet math and index allocation for LinuxSandbox (M13). Kept out
-// of backend_linux.go (no build tag) so the logic unit-tests on any OS.
+// Uplink subnet math and index allocation for LinuxSandbox. Kept out of
+// backend_linux.go (no build tag) so the logic unit-tests on any OS.
 package sandbox
 
 import (
@@ -8,7 +8,7 @@ import (
 )
 
 // maxUplinks is the number of /30 subnets in the uplink pool 10.200.0.0/16.
-// ponytail: pool is hardcoded — parameterize when a deployment needs another.
+// Pool is hardcoded — parameterize when a deployment needs another.
 const maxUplinks = 16384
 
 // uplinkSubnet returns the addresses for uplink index idx, the idx-th /30 of
@@ -23,7 +23,7 @@ func uplinkSubnet(idx int) (hostCIDR, nsCIDR, gateway string) {
 
 // uplinkAllocator hands out uplink subnet indices. Deliberately not safe for
 // concurrent use on its own: every call path runs under the api package's
-// single AppState lock (Amendment 6 — no second lock in this package).
+// single AppState lock — no second lock in this package.
 type uplinkAllocator struct {
 	bySession map[string]int
 	used      map[int]bool
@@ -34,7 +34,7 @@ func newUplinkAllocator() *uplinkAllocator {
 }
 
 // alloc reserves the lowest free index for sessionID.
-// ponytail: O(n) lowest-free scan; bitmap if concurrent sessions exceed ~1k.
+// O(n) lowest-free scan; bitmap if concurrent sessions exceed ~1k.
 func (a *uplinkAllocator) alloc(sessionID string) (int, error) {
 	for i := 0; i < maxUplinks; i++ {
 		if !a.used[i] {

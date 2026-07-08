@@ -1,7 +1,7 @@
 // Drop carries the packet facts of one kernel-dropped egress attempt from a
-// session's nflog listener to the single consumer that signs breach events
-// (E3.2). Facts only, by contract (council B2): no key, no credential, and no
-// shared state may travel with — or be reachable from — a Drop.
+// session's nflog listener to the single consumer that signs breach events.
+// Facts only, by design: no key, no credential, and no shared state may
+// travel with — or be reachable from — a Drop.
 package sandbox
 
 import (

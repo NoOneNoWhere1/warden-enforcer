@@ -159,7 +159,7 @@ func TestConsumeDrainsChannelUntilClose(t *testing.T) {
 	}
 }
 
-// ── E3.3: admission control, loss surfacing, spool write-ahead ───────────────
+// ── Admission control, loss surfacing, spool write-ahead ─────────────────────
 
 func TestTokenBucketAdmitsBurstThenCountsLoss(t *testing.T) {
 	state := testState(t) // real clock: instant drops get no meaningful refill

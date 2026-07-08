@@ -1,5 +1,4 @@
-# Public variant of infra/compose.yml (installed as infra/compose.yml by scripts/export-public.sh).
-# SYNC: the postgres and gate-profile service blocks must stay identical to infra/compose.yml.
+# Warden infrastructure compose file.
 
 services:
   postgres:
@@ -19,12 +18,12 @@ services:
       timeout: 5s
       retries: 10
 
-  # ── Rekor transparency log (E3.4 gate) ──────────────────────────────────────
+  # ── Rekor transparency log (breach-attestation gate) ────────────────────────
   # Real Rekor + Trillian + MySQL + Redis, used only by the breach-attestation
-  # gate (tests/phase1/test_breach_attestation.py). Council-mandated: the gate
-  # proves the rekord + Ed25519 second-signature design end-to-end against a
-  # real log — a stub is exactly what would have hidden B3. Gated behind the
-  # `gate` profile so the default dev stack and the phase-0 job never start it.
+  # gate (tests/phase1/test_breach_attestation.py). A stub is not accepted: the
+  # gate proves the rekord + Ed25519 second-signature design end-to-end against
+  # a real log. Gated behind the `gate` profile so the default dev stack never
+  # starts it.
   # Image tags/pins copied from sigstore/rekor v1.3.6 docker-compose.yml.
   rekor-mysql:
     profiles: ["gate"]

@@ -875,7 +875,7 @@ sequenceDiagram
 
 Losses at any stage (channel drop, ring eviction, per-session token-bucket rate limit) are counted and surfaced in the events API — attestation is best-effort with a visible loss counter.
 
-**Session-kill-on-breach:** a confirmed breach is intended to trigger immediate session termination so the breaching agent does not continue operating. This is **not in E3 scope** — it is scheduled with the Phase 4 orchestrator (A3 gate) unless explicitly pulled forward.
+**Session-kill-on-breach:** a confirmed breach is intended to trigger immediate session termination so the breaching agent does not continue operating. This is **not implemented in the current enforcer** — it arrives with the orchestrator (see README §Future vision).
 
 ---
 

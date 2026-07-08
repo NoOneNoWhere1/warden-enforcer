@@ -1,5 +1,5 @@
 """
-M13 gate tests — veth/uplink provisioning + E2 containment.
+Veth/uplink provisioning and transit-traffic containment gate tests.
 
 Session create must leave the namespace with a working uplink to the root
 namespace (veth pair, /30 from 10.200.0.0/16, default route, ip_forward=1),
@@ -69,7 +69,7 @@ def _credential(session_id: str, targets: list[str]) -> dict:
     }
 
 
-# ── M13: uplink provisioning ─────────────────────────────────────────────────
+# ── Uplink provisioning ──────────────────────────────────────────────────────
 
 
 def test_session_create_provisions_uplink(enforcer):
@@ -111,7 +111,7 @@ def test_session_delete_removes_host_veth(enforcer):
     assert _host_veth_gone(host_if), "host-side veth must be gone after teardown"
 
 
-# ── E2 core: transit traffic containment ─────────────────────────────────────
+# ── Transit traffic containment ──────────────────────────────────────────────
 
 
 def test_guest_egress_contained(enforcer, transit_guest, dummy_targets):

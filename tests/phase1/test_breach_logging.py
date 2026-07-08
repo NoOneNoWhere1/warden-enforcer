@@ -1,12 +1,12 @@
 """
-E3.1 gate tests — E3 breach logging + cross-session uplink deny.
+Breach logging and cross-session uplink deny gate tests.
 
 The session ruleset must (a) unconditionally deny the 10.200.0.0/16 uplink
 pool so one session's guest cannot reach another session's uplink even when
 its targets claim covers the pool, and (b) log every off-scope forwarded
-packet to NFLOG group 1 via the trailing catch-all rule — E3's breach signal
+packet to NFLOG group 1 via the trailing catch-all rule — the breach signal
 source. The catch-all carries a counter so this gate can assert exactly-one
-at the kernel level before the E3.2 listener exists.
+at the kernel level, independent of the nflog listener.
 """
 
 import re

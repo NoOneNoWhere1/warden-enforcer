@@ -30,7 +30,7 @@ type Config struct {
 	// port — the API listens on the unix socket only. Field carried verbatim.
 	Port       uint16
 	SocketPath string
-	// OutboxPath is the durable attestation spool (E3.3). Always on:
+	// OutboxPath is the durable attestation spool. Always on:
 	// main fails closed if it cannot be opened.
 	OutboxPath string
 	// RekorURL is the transparency-log base URL. Empty = Rekor submission

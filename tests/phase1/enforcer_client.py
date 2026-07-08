@@ -2,7 +2,7 @@
 Minimal HTTP-over-Unix-socket client for the enforcer gate tests.
 
 The enforcer binds a Unix domain socket, not a TCP port — file permissions are
-the authentication boundary (E2). `requests` cannot speak to a Unix socket
+the authentication boundary. `requests` cannot speak to a Unix socket
 without a third-party adapter, so this uses only the stdlib.
 """
 

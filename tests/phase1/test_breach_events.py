@@ -1,9 +1,9 @@
 """
-E3.2 gate tests — breach-event emission: nflog listener → signed events.
+Breach-event emission gate tests: nflog listener → signed events.
 
 An off-scope packet dropped by the session's forward chain must surface as
 exactly one signed breach event at GET /sessions/{id}/events, and the
-signature must verify against the active key JWK — the E3.1 kernel-level
+signature must verify against the active key JWK — the kernel-level
 assertion running end-to-end through the listener and consumer.
 """
 

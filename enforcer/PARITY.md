@@ -23,20 +23,20 @@ unchanged Python phase-1 gate suite, and `PARITY_LEDGER.md`.
   after unmarshal; any `json.Unmarshal` error ⇒ 422. Do **not** use
   `DisallowUnknownFields` (axum ignores extra fields; so do we).
 
-## Out of parity scope (revisit at E3)
+## Out of parity scope
 
 - Timestamp fractional-second formatting (`chrono` `AutoSi` emits variable
   precision; only the fixed fixture string `2026-06-30T00:00:00+00:00` is
   ever signed or compared in the parity window — events are always `[]`).
-  **Resolved at E3 planning (3 July 2026):** live events emit second-precision
-  timestamps via the fixed layout; the divergence from chrono is accepted and
-  the conformance vector is not re-frozen.
+  **Resolved (3 July 2026):** live events emit second-precision timestamps
+  via the fixed layout; the divergence from chrono is accepted and the
+  conformance vector is not re-frozen.
 - The `load()` `created_at=now` quirk: field kept verbatim for ledger
   integrity, never serialized.
 - Trailing-slash 301 behavior of Go's ServeMux (the gate never sends
   trailing slashes).
 
-## Post-parity divergence — E3.1 (3 July 2026)
+## Post-parity divergence (3 July 2026)
 
 The ruleset renderer deliberately diverges from the final Rust output:
 
@@ -44,7 +44,7 @@ The ruleset renderer deliberately diverges from the final Rust output:
   a targets claim must not reach another session's uplink.
 - Every explicit deny logs to NFLOG group 1 (`log prefix "warden:<sid>:"`).
 - A trailing catch-all log+counter rule precedes each family's policy drop
-  (off-scope packets otherwise fall through unlogged — E3's breach signal
+  (off-scope packets otherwise fall through unlogged — the breach signal
   source).
 
 The 3 `testdata/*.nft` goldens are Go-owned from this point (third
@@ -55,7 +55,7 @@ re-capture). Everything else in this file remains contract.
 `//nolint:gosec` sites (G204 subprocess interpolation in the Linux backend,
 G302/G306 socket mode bits) mirror the Rust implementation exactly. Do NOT
 "fix" them — adding input validation or tightening modes the Rust code does
-not have is a parity break, not an improvement. See the port plan M9.
+not have is a parity break, not an improvement.
 
 ## JWK wire format
 

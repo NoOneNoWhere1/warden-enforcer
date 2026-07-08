@@ -1,4 +1,4 @@
-"""Phase 5 clearing service — spool ingestion, Rekor confirmation, and slashing."""
+"""Clearing service — spool ingestion, Rekor confirmation, and slashing."""
 
 import argparse
 import base64
@@ -402,7 +402,7 @@ def run_once(conn, socket_path: str, outbox_path: str, rekor_url: str) -> None:
 
 
 def run_daemon(interval_s: float, socket_path: str, outbox_path: str, rekor_url: str) -> None:
-    # ponytail: 2s poll; switch to inotify when sub-second latency matters
+    # 2s poll; switch to inotify when sub-second latency matters
     conn = _db_connect()
     while True:
         try:
@@ -417,7 +417,7 @@ def run_daemon(interval_s: float, socket_path: str, outbox_path: str, rekor_url:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Warden Phase 5 clearing service")
+    parser = argparse.ArgumentParser(description="Warden clearing service")
     parser.add_argument("--once", action="store_true", help="run one cycle and exit")
     parser.add_argument("--interval", type=float, default=2.0, help="daemon poll interval (s)")
     args = parser.parse_args()
